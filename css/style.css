@@ -1,0 +1,449 @@
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #ffecf2, #ffd6e7);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 3000px;
+}
+
+.cube {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.2s ease-out;
+    cursor: grab;
+}
+
+.cube:active {
+    cursor: grabbing;
+}
+
+.face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 15px rgba(255, 182, 193, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.face img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.face:hover img {
+    transform: scale(1.1);
+}
+
+.front { transform: translateZ(60px); }
+.back { transform: translateZ(-60px) rotateY(180deg); }
+.right { transform: translateX(60px) rotateY(90deg); }
+.left { transform: translateX(-60px) rotateY(-90deg); }
+.top { transform: translateY(-60px) rotateX(90deg); }
+.bottom { transform: translateY(60px) rotateX(-90deg); }
+
+.hearts {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.music-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
+.music-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 182, 193, 0.8);
+    border: 2px solid #fff;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.music-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 182, 193, 0.9);
+}
+
+.music-btn.playing {
+    animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes float {
+    from {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 添加加载动画 */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s;
+}
+
+.loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #ff69b4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 修改悬浮照片容器样式 */
+.floating-photos {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    transform-style: preserve-3d;
+    pointer-events: none;
+}
+
+.floating-photo {
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    transform-style: preserve-3d;
+    transition: all 2s ease-in-out;
+    opacity: 0.95;
+    left: 50%;
+    top: 50%;
+    margin: -90px 0 0 -90px;
+}
+
+/* 添加动画暂停类 */
+.floating-photos.paused .floating-photo {
+    animation-play-state: paused;
+}
+
+/* 修改各个面的动画，添加初始状态 */
+.front-photo {
+    transform: translateZ(250px);
+    animation: frontAnimation 12s ease-in-out infinite;
+}
+
+.back-photo {
+    transform: translateZ(-250px) rotateY(180deg);
+    animation: backAnimation 12s ease-in-out infinite;
+}
+
+.right-photo {
+    transform: translateX(250px) rotateY(90deg);
+    animation: rightAnimation 12s ease-in-out infinite;
+}
+
+.left-photo {
+    transform: translateX(-250px) rotateY(-90deg);
+    animation: leftAnimation 12s ease-in-out infinite;
+}
+
+.top-photo {
+    transform: translateY(-250px) rotateX(90deg);
+    animation: topAnimation 12s ease-in-out infinite;
+}
+
+.bottom-photo {
+    transform: translateY(250px) rotateX(-90deg);
+    animation: bottomAnimation 12s ease-in-out infinite;
+}
+
+/* 定义新的动画关键帧 */
+@keyframes frontAnimation {
+    0%, 100% { /* 悬浮状态 */
+        transform: translateZ(250px);
+        filter: blur(0);
+    }
+    40% { /* 准备吸附 */
+        transform: translateZ(250px);
+        filter: blur(0);
+    }
+    45% { /* 开始吸附 */
+        transform: translateZ(150px);
+        filter: blur(1px);
+    }
+    50% { /* 完全吸附 */
+        transform: translateZ(60px) scale(0.67);
+        filter: blur(0);
+    }
+    70% { /* 保持吸附 */
+        transform: translateZ(60px) scale(0.67);
+        filter: blur(0);
+    }
+    75% { /* 开始分离 */
+        transform: translateZ(150px);
+        filter: blur(1px);
+    }
+    80% { /* 完全分离 */
+        transform: translateZ(250px);
+        filter: blur(0);
+    }
+}
+
+@keyframes backAnimation {
+    0%, 100% {
+        transform: translateZ(-250px) rotateY(180deg);
+        filter: blur(0);
+    }
+    40% {
+        transform: translateZ(-250px) rotateY(180deg);
+        filter: blur(0);
+    }
+    45% {
+        transform: translateZ(-150px) rotateY(180deg);
+        filter: blur(1px);
+    }
+    50% {
+        transform: translateZ(-60px) rotateY(180deg) scale(0.67);
+        filter: blur(0);
+    }
+    70% {
+        transform: translateZ(-60px) rotateY(180deg) scale(0.67);
+        filter: blur(0);
+    }
+    75% {
+        transform: translateZ(-150px) rotateY(180deg);
+        filter: blur(1px);
+    }
+    80% {
+        transform: translateZ(-250px) rotateY(180deg);
+        filter: blur(0);
+    }
+}
+
+@keyframes rightAnimation {
+    0%, 100% {
+        transform: translateX(250px) rotateY(90deg);
+        filter: blur(0);
+    }
+    40% {
+        transform: translateX(250px) rotateY(90deg);
+        filter: blur(0);
+    }
+    45% {
+        transform: translateX(150px) rotateY(90deg);
+        filter: blur(1px);
+    }
+    50% {
+        transform: translateX(60px) rotateY(90deg) scale(0.67);
+        filter: blur(0);
+    }
+    70% {
+        transform: translateX(60px) rotateY(90deg) scale(0.67);
+        filter: blur(0);
+    }
+    75% {
+        transform: translateX(150px) rotateY(90deg);
+        filter: blur(1px);
+    }
+    80% {
+        transform: translateX(250px) rotateY(90deg);
+        filter: blur(0);
+    }
+}
+
+@keyframes leftAnimation {
+    0%, 100% {
+        transform: translateX(-250px) rotateY(-90deg);
+        filter: blur(0);
+    }
+    40% {
+        transform: translateX(-250px) rotateY(-90deg);
+        filter: blur(0);
+    }
+    45% {
+        transform: translateX(-150px) rotateY(-90deg);
+        filter: blur(1px);
+    }
+    50% {
+        transform: translateX(-60px) rotateY(-90deg) scale(0.67);
+        filter: blur(0);
+    }
+    70% {
+        transform: translateX(-60px) rotateY(-90deg) scale(0.67);
+        filter: blur(0);
+    }
+    75% {
+        transform: translateX(-150px) rotateY(-90deg);
+        filter: blur(1px);
+    }
+    80% {
+        transform: translateX(-250px) rotateY(-90deg);
+        filter: blur(0);
+    }
+}
+
+@keyframes topAnimation {
+    0%, 100% {
+        transform: translateY(-250px) rotateX(90deg);
+        filter: blur(0);
+    }
+    40% {
+        transform: translateY(-250px) rotateX(90deg);
+        filter: blur(0);
+    }
+    45% {
+        transform: translateY(-150px) rotateX(90deg);
+        filter: blur(1px);
+    }
+    50% {
+        transform: translateY(-60px) rotateX(90deg) scale(0.67);
+        filter: blur(0);
+    }
+    70% {
+        transform: translateY(-60px) rotateX(90deg) scale(0.67);
+        filter: blur(0);
+    }
+    75% {
+        transform: translateY(-150px) rotateX(90deg);
+        filter: blur(1px);
+    }
+    80% {
+        transform: translateY(-250px) rotateX(90deg);
+        filter: blur(0);
+    }
+}
+
+@keyframes bottomAnimation {
+    0%, 100% {
+        transform: translateY(250px) rotateX(-90deg);
+        filter: blur(0);
+    }
+    40% {
+        transform: translateY(250px) rotateX(-90deg);
+        filter: blur(0);
+    }
+    45% {
+        transform: translateY(150px) rotateX(-90deg);
+        filter: blur(1px);
+    }
+    50% {
+        transform: translateY(60px) rotateX(-90deg) scale(0.67);
+        filter: blur(0);
+    }
+    70% {
+        transform: translateY(60px) rotateX(-90deg) scale(0.67);
+        filter: blur(0);
+    }
+    75% {
+        transform: translateY(150px) rotateX(-90deg);
+        filter: blur(1px);
+    }
+    80% {
+        transform: translateY(250px) rotateX(-90deg);
+        filter: blur(0);
+    }
+}
+
+/* 添加过渡效果 */
+.floating-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    transition: all 0.5s ease;
+}
+
+/* 添加草莓雨容器样式 */
+.strawberry-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 修改草莓样式 */
+.strawberry {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024"><path d="M677.398015 684.736494c-91.448732 91.448732-343.214994 195.316428-434.663726 103.867696-91.448732-91.448732 12.418964-343.214994 103.867696-434.663727 91.448732-91.448732 209.993385-61.53032 300.877618 29.918412 91.448732 91.448732 121.367144 209.428886 29.918412 300.877619" fill="%23E2345A"/><path d="M692.074972 437.486218c22.015436 64.352811 11.854465 131.528115-44.595369 187.97795-91.448732 91.448732-343.214994 195.316428-434.663726 103.867695-0.564498-0.564498-0.564498-1.128997-1.128997-1.693495 5.080485 23.708931 15.241455 45.159868 31.047409 60.965822 91.448732 91.448732 343.214994-12.418964 434.663726-103.867696 73.949283-73.949283 68.3043-165.962514 14.676957-247.250276" fill="%23BC2252"/><path d="M651.431092 494.500551s-83.545755 37.821389-143.947079 26.531423c0 0-3.38699-69.997795 57.578832-113.464168 0 0-93.142227-37.821389-123.625138-156.366042 0 0 63.223815-8.467475 130.963616 53.627343 0 0 47.982359-62.094818 28.789416-114.593164 0 0 101.609702 46.288864 79.594267 156.93054 0 0 94.271224 5.644983 150.721058 62.094818 0 0-18.628445 29.353914-75.642778 46.288864 0 0 41.772878 62.094818 48.546857 121.931643 0 0.564498-66.610805 3.951488-152.979051-82.981257" fill="%233BB777"/><path d="M776.749724 516.515987c-8.467475-22.579934-19.192944-43.466373-32.176405-63.788313 51.933848-14.676957 68.868798-41.772878 68.868798-41.772878-51.36935-51.36935-136.6086-56.449835-136.6086-56.449835 19.757442-100.480706-72.255788-142.253583-72.255788-142.253583 17.499449 47.417861-26.531422 103.867696-26.531422 103.867696-46.853363-42.901874-91.448732-48.546858-110.077178-49.111356-0.564498 6.209482-1.693495 12.418964-3.38699 18.628445 31.611907 93.142227 106.690187 124.189636 106.690187 124.189636-20.32194 14.676957-36.127894 34.998897-44.595369 58.707828 57.014333 9.596472 134.915105-25.402426 134.915105-25.402425 47.982359 47.417861 89.190739 66.046307 115.157662 73.384785" fill="%233BB777"/></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 3px rgba(255, 51, 102, 0.5));
+    animation: fall linear infinite;
+}
+
+/* 修改草莓下落动画 */
+@keyframes fall {
+    from {
+        transform: translateY(-20px) rotate(0deg);
+        opacity: 0.9;
+    }
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0.5;
+    }
+}
